@@ -15,7 +15,38 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const {SearchSource} = require("jest");
 const app = express();
+// app.use(express.json)
+const port = 3000;
 
+app.get("/files", (req,res) => {
+    const pathname = path.join(__dirname, './files')
+    fs.readdir(pathname,(err,files)=>{
+        if(err){
+            res.status(500).send("Test file content")
+        } else {
+            res.status(200).json(files)
+        }
+    })
+});
+app.get("/file/:filename", (req, res) =>{
+    const filepath = path.join(__dirname, './files/', req.params.filename);
+    fs.readFile(filepath, 'utf8', (err,data)=>{
+        if(err){
+            res.status(404).send("File not found");
+
+        }else {
+            res.status(200).send(data);
+        }
+    })
+})
+app.get("*", (req,res)=> {
+    res.status(404).send("Route not found");
+})
+
+// app.listen(port, function(){
+//     console.log(`server running on port ${port}`);
+// })
 
 module.exports = app;
